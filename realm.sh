@@ -86,7 +86,7 @@ check_port_available() {
 check_rule_exists() {
     local port=$1
     if [ -f "$CONFIG_FILE" ]; then
-        if grep -q "listen = \"0.0.0.0:${port}\"" "$CONFIG_FILE"; then
+        if grep -q "listen = \"[::]:${port}\"" "$CONFIG_FILE"; then
             echo -e "${RED}错误: 端口 ${port} 的规则已存在。${PLAIN}"
             return 0
         fi
@@ -228,7 +228,7 @@ add_forward() {
     cat <<EOF >> "$CONFIG_FILE"
 
 [[endpoints]]
-listen = "0.0.0.0:$lp"
+listen = "[::]:$lp"
 remote = "$rip:$rp"
 EOF
     restart_service
@@ -248,11 +248,11 @@ add_range_forward() {
     echo "生成中..."
     local rp=$rbp
     for ((p=$sp; p<=$ep; p++)); do
-        if ! grep -q "listen = \"0.0.0.0:$p\"" "$CONFIG_FILE"; then
+        if ! grep -q "listen = \"[::]:$p\"" "$CONFIG_FILE"; then
             cat <<EOF >> "$CONFIG_FILE"
 
 [[endpoints]]
-listen = "0.0.0.0:$p"
+listen = "[::]:$p"
 remote = "$rip:$rp"
 EOF
         fi
